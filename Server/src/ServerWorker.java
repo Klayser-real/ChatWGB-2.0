@@ -64,7 +64,7 @@ public class ServerWorker extends Thread {
                 String cmd = tokens[0];
                 if(cmd.charAt(0) == '/'){
                     if(cmd.substring(1)!= null){
-                    cmd = cmd.substring(1);}
+                        cmd = cmd.substring(1);}
                     if(("logout".equalsIgnoreCase(cmd) || "quit".equalsIgnoreCase(cmd)) && loggato){
                         HandleLogout();
                     }else if("login".equalsIgnoreCase(cmd)){
@@ -240,9 +240,9 @@ public class ServerWorker extends Thread {
                 System.out.println(login + " loggato con successo");
                 List<ServerWorker> workerlist = server.getWorkerList();
                 for (ServerWorker worker: workerlist) {
-                        if(worker.getlogin()!= null){
-                            worker.HandleTopic();
-                        }
+                    if(worker.getlogin()!= null){
+                        worker.HandleTopic();
+                    }
                 }
 
             }else{

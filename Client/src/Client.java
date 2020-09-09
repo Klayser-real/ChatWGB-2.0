@@ -19,10 +19,10 @@ public class Client extends WindowAdapter {
     final JTextPane textinput = new JTextPane();
     JScrollPane textinputsp = new JScrollPane(textinput);
     //colori esadecimale
-        String arancione_p = "#f1935c";
-        String verdelime_p = "#81b214";
-        String neroc_p = "#1b262c";
-    //clori esadecimale
+    String arancione_p = "#f1935c";
+    String verdelime_p = "#81b214";
+    String neroc_p = "#1b262c";
+    //colori esadecimale
     final JTextField host = new JTextField("Host");
     final JTextField port = new JTextField("Porta");
     final JButton connect = new JButton("Connettiti");
@@ -76,7 +76,7 @@ public class Client extends WindowAdapter {
                             message = message.substring(1);
                             message = " -"+ message;
                             message += "\n\r";
-                                appendToPane(textroom,message,Color.decode("#ea5455"));
+                            appendToPane(textroom,message,Color.decode("#ea5455"));
                         }else if(message.charAt(0) == '!'){
                             message = message.substring(1);
 
@@ -94,14 +94,14 @@ public class Client extends WindowAdapter {
                                     String s = message;
                                     if(message.charAt(message.length()-1 )== 'y') {
                                         s = s.substring(0,s.length()-1);
-                                         s = s + "\n\r";
+                                        s = s + "\n\r";
                                     }
                                     appendToPane(textwrite,s,Color.decode(verdelime_p));
                                 }else if(message.charAt(message.length()-1) == '1'){
                                     message = message.substring(0,message.length()-2);
                                     String s = message;
                                     if(message.charAt(message.length()-1 )== 'y') {
-                                         s = s + "\n\r";
+                                        s = s + "\n\r";
                                     }
                                     appendToPane(textwrite,s,Color.RED);
                                 }else if(message.charAt(message.length()-1) == '2'){
@@ -134,10 +134,10 @@ public class Client extends WindowAdapter {
                         }
                     }
                 } catch (IOException | BadLocationException e) {
-                        try {
-                            HomeScreen();
-                        } catch (IOException | BadLocationException ioException) {
-                            ioException.printStackTrace();
+                    try {
+                        HomeScreen();
+                    } catch (IOException | BadLocationException ioException) {
+                        ioException.printStackTrace();
                     }
                 }
             }
@@ -334,36 +334,36 @@ public class Client extends WindowAdapter {
                 String password = pass.getText().trim();
                 String s = "/login "+user+" "+password;
                 output.println(s);
-                    try {
-                        String s2 = input.readLine();
-                        System.out.println(s2);
-                        if (s2.equalsIgnoreCase("hai effettuato l'accesso correttamente")) {
-                            loggato = true;
-                            read = new Read();
-                            System.out.println(read.getState());
-                            frame.remove(name);
-                            frame.remove(pass);
-                            frame.remove(login);
-                            frame.add(textinputsp);
-                            frame.add(textroomsp);
-                            frame.add(textwritesp);
-                            frame.add(send);
-                            frame.revalidate();
-                            frame.repaint();
-                            read.start();
-                        } else {
-                            String su = "Login fallito";
-                            message.setText(null);
-                            appendToPane(message,su,Color.decode("#ea5455"));
-                        }
-                    } catch (IOException | BadLocationException ioException) {
-                        System.err.println("errore, torno home");
-                        try {
-                            HomeScreen();
-                        } catch (IOException | BadLocationException exception) {
-                            exception.printStackTrace();
-                        }
+                try {
+                    String s2 = input.readLine();
+                    System.out.println(s2);
+                    if (s2.equalsIgnoreCase("hai effettuato l'accesso correttamente")) {
+                        loggato = true;
+                        read = new Read();
+                        System.out.println(read.getState());
+                        frame.remove(name);
+                        frame.remove(pass);
+                        frame.remove(login);
+                        frame.add(textinputsp);
+                        frame.add(textroomsp);
+                        frame.add(textwritesp);
+                        frame.add(send);
+                        frame.revalidate();
+                        frame.repaint();
+                        read.start();
+                    } else {
+                        String su = "Login fallito";
+                        message.setText(null);
+                        appendToPane(message,su,Color.decode("#ea5455"));
                     }
+                } catch (IOException | BadLocationException ioException) {
+                    System.err.println("errore, torno home");
+                    try {
+                        HomeScreen();
+                    } catch (IOException | BadLocationException exception) {
+                        exception.printStackTrace();
+                    }
+                }
             }
         });
         send.addActionListener(new ActionListener() {
