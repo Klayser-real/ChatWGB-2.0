@@ -21,7 +21,6 @@ public class ServerWorker extends Thread {
     private ArrayList<ArrayList<String>> database = new ArrayList<>();
     private int passwordn;
     private boolean loggato;
-
     //colori
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLACK = "\u001B[30m";
@@ -44,8 +43,6 @@ public class ServerWorker extends Thread {
         loggato = false;
     }
 
-
-
     @Override
     public void run() {
         try{
@@ -56,7 +53,6 @@ public class ServerWorker extends Thread {
             e.printStackTrace();
         }
     }
-
     private void HandleClientSocket() throws IOException,InterruptedException{
         InputStream inputStream = clientSocket.getInputStream();
         this.outputStream = clientSocket.getOutputStream();
@@ -79,8 +75,6 @@ public class ServerWorker extends Thread {
                         HandleLeave(tokens);
                     }else if("topic".equalsIgnoreCase(cmd)&& loggato){
                         HandleTopic();
-                    }else if("mytopic".equalsIgnoreCase(cmd)&& loggato){
-                        HandleMyTopic();
                     } else if(loggato){
                         String msg = cmd + " << Comando non riconosciuto\n\r";
                         outputStream.write(msg.getBytes());
@@ -129,8 +123,6 @@ public class ServerWorker extends Thread {
             }
         }
     }
-
-
     private void checktopic(String s) throws IOException {
         System.out.println(s);
         List<ServerWorker> workers = server.getWorkerList();
@@ -141,29 +133,48 @@ public class ServerWorker extends Thread {
             }
         }
     }
-
     private void HandleMessagePrivate(String[] tokensmsg) throws IOException {
         if(tokensmsg.length == 2) {
             String sendto = tokensmsg[0];
             String msg = tokensmsg[1];
+            String s = msg;
             List<ServerWorker> workerList = server.getWorkerList();
             for (ServerWorker worker : workerList) {
                 if (sendto.equalsIgnoreCase(worker.getlogin())) {
-                    String msme =ANSI_RED+ "(privato) "+ ANSI_GREEN+"Io"+ANSI_RESET +" >> "+ worker.getlogin() + " >> "+ msg+"\n\r";
-                    msg = ANSI_RED+ "(privato) "+ ANSI_GREEN+ login +ANSI_RESET+ " >> " + " " + msg+"\n\r";
+                    String msme ="(privato) @1\r\n";
                     outputStream.write(msme.getBytes());
+                    msme = "Io@3\r\n";
+                    outputStream.write(msme.getBytes());
+                    msme = " >> @2\n\r";
+                    outputStream.write(msme.getBytes());
+                    msme =  worker.getlogin()+"@4\n\r" ;
+                    outputStream.write(msme.getBytes());
+                    msme = " >> @2\n\r";
+                    outputStream.write(msme.getBytes());
+                    msme = msg+"\n\r";
+                    outputStream.write(msme.getBytes());
+                    msg = "(privato) @1\r\n";
+                    worker.send(msg);
+                    msg = login+"@4\n\r";
+                    worker.send(msg);
+                    msg = " >> @2\n\r";
+                    worker.send(msg);
+                    msg = s+"\n\r";
                     worker.send(msg);
                 }
             }
         }
     }
-
     private void HandleMessage(String tokensmsg) throws IOException {
         String msg = tokensmsg;
         List<ServerWorker> workerList = server.getWorkerList();
         for(ServerWorker worker: workerList){
             if(worker.isMemberOfTopic(this.GetTopic(0))){
-                String outmsg = login+" >> "+ msg+"\n\r";
+                String outmsg = login+"@1\n\r";
+                worker.send(outmsg);
+                outmsg = " >>@3\n\r";
+                worker.send(outmsg);
+                outmsg = msg+"\n\r";
                 worker.send(outmsg);
             }
         }
@@ -191,11 +202,16 @@ public class ServerWorker extends Thread {
 
     private void HandleJoin(String[] tokens) throws IOException {
         if(tokens.length>1){
-            if(topicset.contains(tokens[1]) && !topic.contains(tokens[1])){
+            String sus = "";
+            for(int i =1; i< tokens.length;i++){
+                sus+=tokens[i]+" ";
+            }
+            System.out.println(sus);
+            if(topicset.contains(sus.trim()) && !topic.contains(sus.trim())){
                 topic.clear();
-                topic.add(tokens[1]);
+                topic.add(sus.trim());
                 HandleTopic();
-                String s = "Stai scrivendo in " + tokens[1] + "\n\r";
+                String s = "Stai scrivendo in " + sus.trim() + "\n\r";
                 outputStream.write(s.getBytes());
                 List<ServerWorker> workerlist = server.getWorkerList();
                 for (ServerWorker worker: workerlist) {
@@ -242,11 +258,14 @@ public class ServerWorker extends Thread {
 
     public void EnterScreen() throws IOException {
         //clearScreen();
-        outputStream.write("######################################\n".getBytes());
-        outputStream.write(" ".getBytes());
-        String s = "Benvenuto " + login + " Su WeGetBoosted Chat\n";
+        outputStream.write("######################################y@0\n\r".getBytes());
+        String s = "Benvenuto @2\n\r";
         outputStream.write(s.getBytes());
-        outputStream.write("######################################\n".getBytes());
+        s = login+"@1\r\n";
+        outputStream.write(s.getBytes());
+        s = " Su WeGetBoosted Chat\n\r";
+        outputStream.write(s.getBytes());
+        outputStream.write("######################################y@0\n\r".getBytes());
     }
 
     private String getlogin() {
@@ -278,7 +297,9 @@ public class ServerWorker extends Thread {
         List<ServerWorker> workers = server.getWorkerList();
         for(ServerWorker worker : workers){
             worker.HandleTopic();
+            onlinemsg = login+"@1\n\r";
             worker.send(onlinemsg);
+            onlinemsg = "e' ora offline\r\n";
         }
         clientSocket.close();
     }
